@@ -12,11 +12,15 @@
 
 // Put your function here!
 fn calculate_price_of_apples(count: u32) -> u32 {
-    if count <= 40 {
-        count * 2
-    } else {
-        count
+    match count {
+        x if x <= 40 => count * 2,
+        _ => count,
     }
+    // if count <= 40 {
+    //     count * 2
+    // } else {
+    //     count
+    // }
 }
 
 // Don't modify this function!
