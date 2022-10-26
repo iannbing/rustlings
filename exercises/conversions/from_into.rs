@@ -3,6 +3,7 @@
 // You can read more about it at https://doc.rust-lang.org/std/convert/trait.From.html
 // Execute `rustlings hint from_into` or use the `hint` watch subcommand for a hint.
 
+use std::fmt;
 #[derive(Debug)]
 struct Person {
     name: String,
@@ -35,10 +36,39 @@ impl Default for Person {
 // If while parsing the age, something goes wrong, then return the default of Person
 // Otherwise, then return an instantiated Person object with the results
 
-// I AM NOT DONE
+#[derive(Debug)]
+struct InvalidInputError;
+impl fmt::Display for InvalidInputError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "invalid input")
+    }
+}
 
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
+        let vector = s.split(",").collect::<Vec<&str>>();
+        let is_valid_string = vector.len() == 2 && vector[0].len() > 0 && vector[1].len() > 0;
+
+        let name = match is_valid_string {
+            x if x == true => Ok(String::from(vector[0])),
+            _ => Err(InvalidInputError),
+        };
+        let age = match is_valid_string && name.is_ok() {
+            x if x == true => String::from(vector[1]).parse::<usize>(),
+            _ => Ok(30),
+        };
+
+        if name.is_ok() && age.is_ok() {
+            return Person {
+                name: name.unwrap(),
+                age: age.unwrap(),
+            };
+        } else {
+            return Person {
+                name: String::from("John"),
+                age: 30,
+            };
+        }
     }
 }
 
