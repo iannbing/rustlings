@@ -36,38 +36,32 @@ impl Default for Person {
 // If while parsing the age, something goes wrong, then return the default of Person
 // Otherwise, then return an instantiated Person object with the results
 
-#[derive(Debug)]
-struct InvalidInputError;
-impl fmt::Display for InvalidInputError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "invalid input")
+fn get_default_person() -> Person {
+    Person {
+        name: String::from("John"),
+        age: 30,
     }
 }
 
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
         let vector = s.split(",").collect::<Vec<&str>>();
+
         let is_valid_string = vector.len() == 2 && vector[0].len() > 0 && vector[1].len() > 0;
+        if !is_valid_string {
+            return get_default_person();
+        }
 
-        let name = match is_valid_string {
-            x if x == true => Ok(String::from(vector[0])),
-            _ => Err(InvalidInputError),
-        };
-        let age = match is_valid_string && name.is_ok() {
-            x if x == true => String::from(vector[1]).parse::<usize>(),
-            _ => Ok(30),
-        };
+        let name = String::from(vector[0]);
+        let age = String::from(vector[1]).parse::<usize>();
 
-        if name.is_ok() && age.is_ok() {
-            return Person {
-                name: name.unwrap(),
-                age: age.unwrap(),
-            };
-        } else {
-            return Person {
-                name: String::from("John"),
-                age: 30,
-            };
+        if age.is_err() {
+            return get_default_person();
+        }
+
+        Person {
+            name,
+            age: age.unwrap(),
         }
     }
 }
